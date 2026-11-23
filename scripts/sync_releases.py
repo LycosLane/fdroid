@@ -16,7 +16,6 @@ APPS = [
     ("LycosLane/purepodcast", "com.lycoslane.purepodcast"),
     ("LycosLane/pureaudiobooks", "com.lycoslane.pureaudiobooks"),
     ("LycosLane/freedatadiet-mobile", "com.lycoslane.freedatadiet_mobile"),
-    ("LycosLane/puremusic", "com.lycoslane.puremusic"),
 ]
 
 ROOT_DIR = Path(__file__).resolve().parent.parent

@@ -8,7 +8,6 @@ Official F-Droid repository for all Pure Suite Android applications, hosted via 
 
 * **[PurePodcast](https://github.com/LycosLane/purepodcast):** Clean, tracker-free podcast player with on-device AAC downsampling, live Mono/Audio-Fix DSP, and local SAF folders.
 * **[PureAudiobooks](https://github.com/LycosLane/pureaudiobooks):** Privacy-first audiobook player with SAF folder scanning, live Mono/Audio-Fix DSP, album-tag splitting, and sidecar metadata.
-* **[PureMusic](https://github.com/LycosLane/puremusic):** Privacy-first music player with offline Mood Mix, 5-band equalizer, Party Mode crossfade, and direct MP3 tag writing.
 * **[FreeDataDiet Mobile](https://github.com/LycosLane/freedatadiet-mobile):** Fast, 100% offline disk usage, configurable multi-criteria duplicate finder, and app-cache analyzer with zero internet permission.
 
 ---
