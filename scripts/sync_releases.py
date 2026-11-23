@@ -470,7 +470,8 @@ def write_landing_page(synced_apps: list[dict[str, object]]) -> None:
 
     <footer>
       MIT License &copy; 2026 <a href="https://github.com/LycosLane">LycosLane</a> &middot;
-      <a href="https://github.com/LycosLane/fdroid">Repository Source</a>
+      <a href="https://github.com/LycosLane/fdroid">Repository Source</a><br>
+      <span style="font-size:0.78rem;opacity:0.8;">The Android robot is reproduced or modified from work created and shared by Google and used according to terms described in the Creative Commons 3.0 Attribution License.</span>
     </footer>
   </div>
 </body>

@@ -37,3 +37,5 @@ On mobile without a second screen, open the [**1-Click Add Page**](https://lycos
 ## License
 
 MIT License © 2026 LycosLane
+
+The Android robot in the repository icon is reproduced or modified from work created and shared by Google and used according to terms described in the Creative Commons 3.0 Attribution License.
