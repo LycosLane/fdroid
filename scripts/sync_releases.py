@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import html as html_lib
 import io
 import json
 import os
@@ -13,15 +14,16 @@ import zipfile
 from pathlib import Path
 
 APPS = [
-    ("LycosLane/purepodcast", "com.lycoslane.purepodcast"),
-    ("LycosLane/pureaudiobooks", "com.lycoslane.pureaudiobooks"),
-    ("LycosLane/freedatadiet-mobile", "com.lycoslane.freedatadiet_mobile"),
+    ("LycosLane/purepodcast", "com.lycoslane.purepodcast", "PurePodcast", "Multimedia"),
+    ("LycosLane/pureaudiobooks", "com.lycoslane.pureaudiobooks", "PureAudiobooks", "Multimedia"),
+    ("LycosLane/freedatadiet-mobile", "com.lycoslane.freedatadiet_mobile", "FreeDataDiet Mobile", "System"),
 ]
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 REPO_DIR = ROOT_DIR / "repo"
 METADATA_DIR = ROOT_DIR / "metadata"
 PUBLIC_DIR = ROOT_DIR / "public"
+FINGERPRINT = "E104F7455B72D8FF7A9F9501B399214AC5AE1FE2707AD3673B638542A66A8397"
 
 
 def github_request(url: str, accept: str = "application/vnd.github+json") -> bytes:
@@ -91,52 +93,386 @@ def sync_fastlane_metadata(repo_slug: str, app_id: str) -> None:
         print(f"[INFO] No Fastlane metadata found in {repo_slug}, using {app_id}.yml")
 
 
-def write_landing_page(synced_apps: list[dict[str, str]]) -> None:
-    """Write a minimal static landing page for the GitHub Pages F-Droid repository."""
+def read_app_store_copy(app_id: str) -> tuple[str, list[str], str]:
+    """Read short description, bullet highlights, and icon path from synced Fastlane metadata."""
+    en_dir = METADATA_DIR / app_id / "en-US"
+    short_file = en_dir / "short_description.txt"
+    full_file = en_dir / "full_description.txt"
+    icon_file = en_dir / "images" / "icon.png"
+
+    short_desc = short_file.read_text(encoding="utf-8").strip() if short_file.exists() else ""
+    bullets: list[str] = []
+    if full_file.exists():
+        for line in full_file.read_text(encoding="utf-8").splitlines():
+            stripped = line.strip()
+            if stripped.startswith("- "):
+                bullets.append(stripped[2:].strip())
+            if len(bullets) >= 4:
+                break
+
+    icon_rel = ""
+    if icon_file.exists():
+        icons_out = PUBLIC_DIR / "icons"
+        icons_out.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(icon_file, icons_out / f"{app_id}.png")
+        icon_rel = f"icons/{app_id}.png"
+
+    return short_desc, bullets, icon_rel
+
+
+def write_landing_page(synced_apps: list[dict[str, object]]) -> None:
+    """Write the Obsidian-themed static landing page for the GitHub Pages F-Droid repo."""
     PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
-    qr_src = ROOT_DIR / "assets" / "repo-qr.png"
-    if qr_src.exists():
-        shutil.copyfile(qr_src, PUBLIC_DIR / "repo-qr.png")
 
-    fingerprint = "E104F7455B72D8FF7A9F9501B399214AC5AE1FE2707AD3673B638542A66A8397"
+    for asset_name in ("repo-qr.png", "repo-icon.png", "logo-android-fedora.svg"):
+        src = ROOT_DIR / "assets" / asset_name
+        if src.exists():
+            shutil.copyfile(src, PUBLIC_DIR / asset_name)
+
     repo_url = "https://lycoslane.github.io/fdroid/repo"
-    verified_url = f"{repo_url}?fingerprint={fingerprint}"
-    fdroid_intent_url = f"fdroidrepos://lycoslane.github.io/fdroid/repo?fingerprint={fingerprint}"
+    verified_url = f"{repo_url}?fingerprint={FINGERPRINT}"
+    fdroid_intent_url = f"fdroidrepos://lycoslane.github.io/fdroid/repo?fingerprint={FINGERPRINT}"
 
-    rows = "\n".join(
-        f"      <li><strong>{app['name']}</strong> (<code>{app['app_id']}</code>) - "
-        f"<a href=\"{app['url']}\">{app['tag']}</a></li>"
-        for app in synced_apps
-    )
+    cards_html = []
+    for app in synced_apps:
+        app_id = str(app["app_id"])
+        name = html_lib.escape(str(app["display_name"]))
+        tag = html_lib.escape(str(app["tag"]))
+        category = html_lib.escape(str(app["category"]))
+        repo_link = html_lib.escape(str(app["repo_url"]))
+        apk_link = html_lib.escape(str(app["apk_url"]))
+        short_desc = html_lib.escape(str(app["short_desc"]))
+        icon_rel = str(app["icon_rel"])
+        bullets = app["bullets"]
+
+        icon_tag = (
+            f'<img class="app-icon" src="{html_lib.escape(icon_rel)}" alt="{name} icon" />'
+            if icon_rel else ""
+        )
+        bullets_html = "".join(
+            f"<li>{html_lib.escape(str(b))}</li>" for b in bullets
+        )
+        cards_html.append(f"""      <article class="app-card">
+        <div class="app-head">
+          {icon_tag}
+          <div>
+            <div class="app-title-row">
+              <h3>{name}</h3>
+              <span class="badge badge-version">{tag}</span>
+              <span class="badge badge-cat">{category}</span>
+            </div>
+            <div class="app-id"><code>{html_lib.escape(app_id)}</code></div>
+          </div>
+        </div>
+        <p class="app-short">{short_desc}</p>
+        <ul class="app-bullets">{bullets_html}</ul>
+        <div class="app-actions">
+          <a class="btn btn-secondary" href="{repo_link}">GitHub Source</a>
+          <a class="btn btn-outline" href="{apk_link}">Direct APK</a>
+        </div>
+      </article>""")
+
+    apps_block = "\n".join(cards_html)
+
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LycosLane Apps - F-Droid Repository</title>
+  <link rel="icon" type="image/png" href="repo-icon.png">
   <style>
-    body {{ font-family: system-ui, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: #161a1c; }}
-    code {{ background: #f1f5f9; padding: 2px 6px; border-radius: 4px; word-break: break-all; }}
-    .box {{ background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 18px; margin: 16px 0; }}
-    .btn {{ display: inline-block; background: #0f172a; color: #ffffff; text-decoration: none; padding: 10px 16px; border-radius: 6px; font-weight: 600; margin-top: 8px; }}
+    :root {{
+      --bg: #101216;
+      --surface: #171A21;
+      --card: #1E222B;
+      --border: #2B313E;
+      --text: #ECEFF4;
+      --muted: #94A3B8;
+      --cyan: #00B4FF;
+      --amber: #FFB020;
+    }}
+    * {{ box-sizing: border-box; }}
+    body {{
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      line-height: 1.6;
+    }}
+    .wrap {{
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 36px 20px 64px;
+    }}
+    .hero {{
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }}
+    .hero-logo {{
+      width: 84px;
+      height: 84px;
+      border-radius: 20px;
+      flex-shrink: 0;
+    }}
+    .hero h1 {{
+      margin: 0 0 6px;
+      font-size: 1.75rem;
+      line-height: 1.2;
+    }}
+    .hero p {{
+      margin: 0;
+      color: var(--muted);
+    }}
+    .accent-bar {{
+      display: inline-flex;
+      gap: 6px;
+      margin-top: 10px;
+    }}
+    .pill-cyan {{
+      background: rgba(0, 180, 255, 0.14);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 180, 255, 0.35);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 999px;
+    }}
+    .pill-amber {{
+      background: rgba(255, 176, 32, 0.14);
+      color: var(--amber);
+      border: 1px solid rgba(255, 176, 32, 0.35);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 999px;
+    }}
+    .setup-grid {{
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 20px;
+      margin-bottom: 32px;
+    }}
+    @media (max-width: 740px) {{
+      .hero {{ flex-direction: column; text-align: center; }}
+      .accent-bar {{ justify-content: center; }}
+      .setup-grid {{ grid-template-columns: 1fr; }}
+    }}
+    .panel {{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+    }}
+    .qr-panel {{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      justify-content: center;
+    }}
+    .qr-box {{
+      background: #FFFFFF;
+      padding: 10px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+    }}
+    .qr-box img {{
+      display: block;
+      width: 196px;
+      height: 196px;
+    }}
+    .btn {{
+      display: inline-block;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.92rem;
+      padding: 10px 16px;
+      border-radius: 8px;
+      transition: opacity 0.15s ease;
+    }}
+    .btn:hover {{ opacity: 0.9; }}
+    .btn-primary {{
+      background: var(--cyan);
+      color: #081218;
+      width: 100%;
+      text-align: center;
+    }}
+    .btn-secondary {{
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }}
+    .btn-outline {{
+      background: rgba(255, 176, 32, 0.12);
+      color: var(--amber);
+      border: 1px solid rgba(255, 176, 32, 0.35);
+    }}
+    h2 {{
+      font-size: 1.25rem;
+      margin: 0 0 14px;
+    }}
+    code {{
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--cyan);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.84rem;
+      word-break: break-all;
+      display: inline-block;
+    }}
+    .field-label {{
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin: 12px 0 4px;
+    }}
+    .field-label:first-child {{ margin-top: 0; }}
+    .hint {{
+      margin: 12px 0 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }}
+    .apps-list {{
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }}
+    .app-card {{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+    }}
+    .app-head {{
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }}
+    .app-icon {{
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+      flex-shrink: 0;
+    }}
+    .app-title-row {{
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 4px;
+    }}
+    .app-title-row h3 {{
+      margin: 0;
+      font-size: 1.2rem;
+    }}
+    .badge {{
+      font-size: 0.76rem;
+      font-weight: 600;
+      padding: 2px 9px;
+      border-radius: 999px;
+    }}
+    .badge-version {{
+      background: rgba(0, 180, 255, 0.14);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 180, 255, 0.35);
+    }}
+    .badge-cat {{
+      background: var(--surface);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }}
+    .app-id code {{
+      color: var(--muted);
+      font-size: 0.78rem;
+      padding: 2px 6px;
+    }}
+    .app-short {{
+      margin: 0 0 10px;
+      color: var(--text);
+      font-weight: 500;
+    }}
+    .app-bullets {{
+      margin: 0 0 16px;
+      padding-left: 20px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }}
+    .app-bullets li {{
+      margin-bottom: 6px;
+    }}
+    .app-actions {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }}
+    footer {{
+      margin-top: 40px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }}
+    footer a {{
+      color: var(--cyan);
+      text-decoration: none;
+    }}
   </style>
 </head>
 <body>
-  <h1>LycosLane Apps - F-Droid Repository</h1>
-  <p>Scan the QR code or tap the button below in <strong>F-Droid</strong>, <strong>Droid-ify</strong>, or <strong>Neo Store</strong> to add the verified repository:</p>
-  <div class="box" style="text-align:center;">
-    <img src="repo-qr.png" width="220" height="220" alt="LycosLane F-Droid QR Code" style="display:block;margin:0 auto 12px;" />
-    <a class="btn" href="{fdroid_intent_url}">Add to F-Droid Client</a>
+  <div class="wrap">
+    <header class="hero">
+      <img class="hero-logo" src="repo-icon.png" alt="LycosLane Android Fedora Logo" />
+      <div>
+        <h1>LycosLane Apps - F-Droid Repository</h1>
+        <p>Privacy-first, 100% open-source Android apps. Built without ads, accounts, or telemetry.</p>
+        <div class="accent-bar">
+          <span class="pill-cyan">MIT Licensed FOSS</span>
+          <span class="pill-amber">Signed F-Droid Repo</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="setup-grid">
+      <div class="panel qr-panel">
+        <div class="qr-box">
+          <img src="repo-qr.png" alt="LycosLane F-Droid QR Code" />
+        </div>
+        <a class="btn btn-primary" href="{fdroid_intent_url}">Add to Neo Store / F-Droid</a>
+      </div>
+
+      <div class="panel">
+        <h2>Manual Repository Setup</h2>
+        <div class="field-label">Repository URL</div>
+        <code>{repo_url}</code>
+        <div class="field-label">SHA-256 Fingerprint</div>
+        <code>{FINGERPRINT}</code>
+        <div class="field-label">Full Verified URL</div>
+        <code>{verified_url}</code>
+        <p class="hint">In <strong>F-Droid</strong>, <strong>Droid-ify</strong>, or <strong>Neo Store</strong>: leave username and password empty, and keep mirror rotation disabled.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Available Apps</h2>
+      <div class="apps-list">
+{apps_block}
+      </div>
+    </section>
+
+    <footer>
+      MIT License &copy; 2026 <a href="https://github.com/LycosLane">LycosLane</a> &middot;
+      <a href="https://github.com/LycosLane/fdroid">Repository Source</a>
+    </footer>
   </div>
-  <div class="box">
-    <p><strong>Repository URL:</strong><br><code>{repo_url}</code></p>
-    <p><strong>SHA-256 Fingerprint:</strong><br><code>{fingerprint}</code></p>
-    <p><strong>Verified URL:</strong><br><code>{verified_url}</code></p>
-  </div>
-  <h2>Available Apps</h2>
-  <ul>
-{rows}
-  </ul>
 </body>
 </html>
 """
@@ -147,9 +483,9 @@ def write_landing_page(synced_apps: list[dict[str, str]]) -> None:
 def main() -> None:
     REPO_DIR.mkdir(parents=True, exist_ok=True)
     METADATA_DIR.mkdir(parents=True, exist_ok=True)
-    synced_apps: list[dict[str, str]] = []
+    synced_apps: list[dict[str, object]] = []
 
-    for repo_slug, app_id in APPS:
+    for repo_slug, app_id, display_name, category in APPS:
         release_url = f"https://api.github.com/repos/{repo_slug}/releases/latest"
         try:
             release = json.loads(github_request(release_url).decode("utf-8"))
@@ -173,11 +509,17 @@ def main() -> None:
             f.write(apk_bytes)
 
         sync_fastlane_metadata(repo_slug, app_id)
+        short_desc, bullets, icon_rel = read_app_store_copy(app_id)
         synced_apps.append({
-            "name": repo_slug.split("/")[-1],
+            "display_name": display_name,
             "app_id": app_id,
+            "category": category,
             "tag": tag,
-            "url": str(release.get("html_url", f"https://github.com/{repo_slug}/releases")),
+            "repo_url": f"https://github.com/{repo_slug}",
+            "apk_url": download_url,
+            "short_desc": short_desc,
+            "bullets": bullets,
+            "icon_rel": icon_rel,
         })
 
     if not synced_apps:
