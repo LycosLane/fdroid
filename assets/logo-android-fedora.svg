@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <rect width="512" height="512" rx="112" fill="#101216"/>
 
-  <!-- Master Fedora (exact 1.22x Pure Suite scale, rotate(-6), 24px #101216 cutout backing) -->
-  <g transform="translate(256, 236) rotate(-6) scale(1.22) translate(-256, -267)">
+  <!-- Master Fedora (exact 1.22x Pure Suite canonical transform at (256, 248), rotate(-6), 24px #101216 cutout backing) -->
+  <g transform="translate(256, 248) scale(1.22) translate(-256, -264) rotate(-6 256 256)">
     <g stroke="#101216" stroke-width="24" stroke-linejoin="round" fill="#101216">
       <path d="M 162 252 L 186 162 L 208 150 L 256 196 L 304 150 L 326 162 L 350 252 Q 256 264 162 252 Z"/>
       <path d="M 220 154 L 256 165 L 292 154 L 256 186 Z"/>
