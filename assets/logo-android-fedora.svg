@@ -1,38 +1,38 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <rect width="512" height="512" rx="112" fill="#101216"/>
+  <defs>
+    <clipPath id="iconClip">
+      <rect width="512" height="512" rx="112"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#iconClip)">
+    <rect width="512" height="512" rx="112" fill="#101216"/>
 
-  <!-- Master Fedora (exact 1.22x Pure Suite canonical transform at (256, 248), rotate(-6), 24px #101216 cutout backing) -->
-  <g transform="translate(256, 248) scale(1.22) translate(-256, -264) rotate(-6 256 256)">
-    <g stroke="#101216" stroke-width="24" stroke-linejoin="round" fill="#101216">
-      <path d="M 162 252 L 186 162 L 208 150 L 256 196 L 304 150 L 326 162 L 350 252 Q 256 264 162 252 Z"/>
-      <path d="M 220 154 L 256 165 L 292 154 L 256 186 Z"/>
-      <path d="M 159 264 Q 232 273 300 269 L 305 305 Q 234 310 151 300 Z"/>
-      <path d="M 315 268 Q 334 266 353 264 L 361 300 Q 342 303 320 305 Z"/>
-      <path d="M 86 312 L 150 312 Q 256 326 362 312 L 426 312 C 394 362, 330 384, 256 384 C 182 384, 118 362, 86 312 Z"/>
+    <g transform="rotate(-6 256 256)">
+      <!-- Official Google Android Robot (unmodified proportions, scaled 2.30x & centered under hat at x=256, y=532) -->
+      <g transform="translate(256, 532) scale(2.30)">
+        <line x1="-47.5" y1="-82.3" x2="-67.6" y2="-117.1" stroke="#3DDC84" stroke-width="8.2" stroke-linecap="round"/>
+        <line x1="47.5" y1="-82.3" x2="67.6" y2="-117.1" stroke="#3DDC84" stroke-width="8.2" stroke-linecap="round"/>
+        <path d="M -100 0 A 100 100 0 0 1 100 0 Z" fill="#3DDC84"/>
+        <circle cx="-44" cy="-44" r="8.5" fill="#101216"/>
+        <circle cx="44" cy="-44" r="8.5" fill="#101216"/>
+        <path d="M -100 10 L 100 10 L 100 120 C 100 134, 88 146, 74 146 L -74 146 C -88 146, -100 134, -100 120 Z" fill="#3DDC84"/>
+      </g>
+
+      <!-- Canonical Master White Fedora (1.22x at (256, 248), 24px #101216 cutout backing, Green #3DDC84 + Pink #EC4899 ribbon) -->
+      <g transform="translate(256, 248) scale(1.22) translate(-256, -264)">
+        <g stroke="#101216" stroke-width="24" stroke-linejoin="round" fill="#101216">
+          <path d="M 162 252 L 186 162 L 208 150 L 256 196 L 304 150 L 326 162 L 350 252 Q 256 264 162 252 Z"/>
+          <path d="M 220 154 L 256 165 L 292 154 L 256 186 Z"/>
+          <path d="M 159 264 Q 232 273 300 269 L 305 305 Q 234 310 151 300 Z"/>
+          <path d="M 315 268 Q 334 266 353 264 L 361 300 Q 342 303 320 305 Z"/>
+          <path d="M 86 312 L 150 312 Q 256 326 362 312 L 426 312 C 394 362, 330 384, 256 384 C 182 384, 118 362, 86 312 Z"/>
+        </g>
+        <path d="M 162 252 L 186 162 L 208 150 L 256 196 L 304 150 L 326 162 L 350 252 Q 256 264 162 252 Z" fill="#FFFFFF"/>
+        <path d="M 220 154 L 256 165 L 292 154 L 256 186 Z" fill="#FFFFFF"/>
+        <path d="M 159 264 Q 232 273 300 269 L 305 305 Q 234 310 151 300 Z" fill="#3DDC84"/>
+        <path d="M 315 268 Q 334 266 353 264 L 361 300 Q 342 303 320 305 Z" fill="#EC4899"/>
+        <path d="M 86 312 L 150 312 Q 256 326 362 312 L 426 312 C 394 362, 330 384, 256 384 C 182 384, 118 362, 86 312 Z" fill="#FFFFFF"/>
+      </g>
     </g>
-    <path d="M 162 252 L 186 162 L 208 150 L 256 196 L 304 150 L 326 162 L 350 252 Q 256 264 162 252 Z" fill="#FFFFFF"/>
-    <path d="M 220 154 L 256 165 L 292 154 L 256 186 Z" fill="#FFFFFF"/>
-    <path d="M 159 264 Q 232 273 300 269 L 305 305 Q 234 310 151 300 Z" fill="#00B4FF"/>
-    <path d="M 315 268 Q 334 266 353 264 L 361 300 Q 342 303 320 305 Z" fill="#FFB020"/>
-    <path d="M 86 312 L 150 312 Q 256 326 362 312 L 426 312 C 394 362, 330 384, 256 384 C 182 384, 118 362, 86 312 Z" fill="#FFFFFF"/>
-  </g>
-
-  <!-- Foreground Android Robot Emblem (lower-right, matching PurePodcast mic placement, 20px #101216 cutout) -->
-  <g transform="translate(372, 356) scale(0.56)">
-    <!-- Cutout Backing -->
-    <g fill="#101216" stroke="#101216" stroke-width="34" stroke-linejoin="round" stroke-linecap="round">
-      <line x1="-68" y1="-88" x2="-100" y2="-142"/>
-      <line x1="68" y1="-88" x2="100" y2="-142"/>
-      <path d="M -116 14 A 116 116 0 0 1 116 14 Z"/>
-      <path d="M -116 32 L 116 32 L 116 116 C 116 134, 102 148, 84 148 L -84 148 C -102 148, -116 134, -116 116 Z"/>
-    </g>
-
-    <!-- Android Green Silhouette (#3DDC84) -->
-    <line x1="-68" y1="-88" x2="-100" y2="-142" stroke="#3DDC84" stroke-width="14" stroke-linecap="round"/>
-    <line x1="68" y1="-88" x2="100" y2="-142" stroke="#3DDC84" stroke-width="14" stroke-linecap="round"/>
-    <path d="M -116 14 A 116 116 0 0 1 116 14 Z" fill="#3DDC84"/>
-    <circle cx="-48" cy="-36" r="12" fill="#101216"/>
-    <circle cx="48" cy="-36" r="12" fill="#101216"/>
-    <path d="M -116 32 L 116 32 L 116 116 C 116 134, 102 148, 84 148 L -84 148 C -102 148, -116 134, -116 116 Z" fill="#3DDC84"/>
   </g>
 </svg>
