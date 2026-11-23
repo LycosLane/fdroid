@@ -94,6 +94,15 @@ def sync_fastlane_metadata(repo_slug: str, app_id: str) -> None:
 def write_landing_page(synced_apps: list[dict[str, str]]) -> None:
     """Write a minimal static landing page for the GitHub Pages F-Droid repository."""
     PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
+    qr_src = ROOT_DIR / "assets" / "repo-qr.png"
+    if qr_src.exists():
+        shutil.copyfile(qr_src, PUBLIC_DIR / "repo-qr.png")
+
+    fingerprint = "E104F7455B72D8FF7A9F9501B399214AC5AE1FE2707AD3673B638542A66A8397"
+    repo_url = "https://lycoslane.github.io/fdroid/repo"
+    verified_url = f"{repo_url}?fingerprint={fingerprint}"
+    fdroid_intent_url = f"fdroidrepos://lycoslane.github.io/fdroid/repo?fingerprint={fingerprint}"
+
     rows = "\n".join(
         f"      <li><strong>{app['name']}</strong> (<code>{app['app_id']}</code>) - "
         f"<a href=\"{app['url']}\">{app['tag']}</a></li>"
@@ -107,15 +116,22 @@ def write_landing_page(synced_apps: list[dict[str, str]]) -> None:
   <title>LycosLane Apps - F-Droid Repository</title>
   <style>
     body {{ font-family: system-ui, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: #161a1c; }}
-    code {{ background: #f1f5f9; padding: 2px 6px; border-radius: 4px; }}
+    code {{ background: #f1f5f9; padding: 2px 6px; border-radius: 4px; word-break: break-all; }}
     .box {{ background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 18px; margin: 16px 0; }}
+    .btn {{ display: inline-block; background: #0f172a; color: #ffffff; text-decoration: none; padding: 10px 16px; border-radius: 6px; font-weight: 600; margin-top: 8px; }}
   </style>
 </head>
 <body>
   <h1>LycosLane Apps - F-Droid Repository</h1>
-  <p>Add this repository URL in <strong>F-Droid</strong>, <strong>Droid-ify</strong>, or <strong>Neo Store</strong> to install and automatically update all Pure Suite Android apps:</p>
+  <p>Scan the QR code or tap the button below in <strong>F-Droid</strong>, <strong>Droid-ify</strong>, or <strong>Neo Store</strong> to add the verified repository:</p>
+  <div class="box" style="text-align:center;">
+    <img src="repo-qr.png" width="220" height="220" alt="LycosLane F-Droid QR Code" style="display:block;margin:0 auto 12px;" />
+    <a class="btn" href="{fdroid_intent_url}">Add to F-Droid Client</a>
+  </div>
   <div class="box">
-    <code>https://lycoslane.github.io/fdroid/repo</code>
+    <p><strong>Repository URL:</strong><br><code>{repo_url}</code></p>
+    <p><strong>SHA-256 Fingerprint:</strong><br><code>{fingerprint}</code></p>
+    <p><strong>Verified URL:</strong><br><code>{verified_url}</code></p>
   </div>
   <h2>Available Apps</h2>
   <ul>

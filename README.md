@@ -14,9 +14,24 @@ Official F-Droid repository for all Pure Suite Android applications, hosted via 
 
 ## How to Install
 
+### Option 1: Scan QR Code (Recommended)
+Scan this QR code with **F-Droid**, **Droid-ify**, or **Neo Store** to add the repository URL and signing fingerprint automatically:
+
+<p align="center">
+  <img src="assets/repo-qr.png" width="220" alt="LycosLane F-Droid Repository QR Code" />
+</p>
+
+Or copy and open the full verified repository link directly on your phone:
+
+`https://lycoslane.github.io/fdroid/repo?fingerprint=E104F7455B72D8FF7A9F9501B399214AC5AE1FE2707AD3673B638542A66A8397`
+
+### Option 2: Manual Setup
 1. Install **F-Droid**, **Droid-ify**, or **Neo Store** on your Android device.
-2. Open **Repositories -> Add repository** and paste this URL:
-   `https://lycoslane.github.io/fdroid/repo`
+2. Open **Repositories -> Add repository** and enter:
+   * **Repository URL:** `https://lycoslane.github.io/fdroid/repo`
+   * **Fingerprint:** `E104F7455B72D8FF7A9F9501B399214AC5AE1FE2707AD3673B638542A66A8397`
+   * **Username / Password:** leave empty
+   * **Mirror rotation:** leave disabled
 3. Refresh repositories, then install and update any of the apps above with one tap.
 
 ---
