@@ -1,0 +1,81 @@
+name: Deploy F-Droid Repository
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install fdroidserver and Android build-tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-17-jdk fdroidserver apksigner aapt python3
+
+      - name: Decode repository keystore and inject passwords
+        env:
+          FDROID_KEYSTORE_BASE64: ${{ secrets.FDROID_KEYSTORE_BASE64 }}
+          FDROID_KEYSTORE_PASS: ${{ secrets.FDROID_KEYSTORE_PASS }}
+          FDROID_KEY_PASS: ${{ secrets.FDROID_KEY_PASS }}
+        run: |
+          if [ -z "$FDROID_KEYSTORE_BASE64" ] || [ -z "$FDROID_KEYSTORE_PASS" ] || [ -z "$FDROID_KEY_PASS" ]; then
+            echo "Missing required secrets: FDROID_KEYSTORE_BASE64, FDROID_KEYSTORE_PASS, FDROID_KEY_PASS"
+            exit 1
+          fi
+          echo "$FDROID_KEYSTORE_BASE64" | base64 -d > keystore.p12
+          python3 - <<'PY'
+          import json
+          import os
+          with open("config.yml", "a", encoding="utf-8", newline="\n") as f:
+              f.write("keystorepass: " + json.dumps(os.environ["FDROID_KEYSTORE_PASS"]) + "\n")
+              f.write("keypass: " + json.dumps(os.environ["FDROID_KEY_PASS"]) + "\n")
+          PY
+          chmod 600 config.yml keystore.p12
+
+      - name: Sync latest GitHub Releases and Fastlane metadata
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/sync_releases.py
+
+      - name: Update and sign F-Droid repository index
+        run: fdroid update --create-metadata --use-date-from-apk --verbose
+
+      - name: Prepare static GitHub Pages output
+        run: |
+          mkdir -p public/repo
+          cp -r repo/. public/repo/
+
+      - name: Remove keystore material
+        if: always()
+        run: rm -f keystore.p12
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

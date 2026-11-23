@@ -1,0 +1,19 @@
+Categories:
+  - Multimedia
+License: MIT
+AuthorName: LycosLane
+WebSite: https://github.com/LycosLane/puremusic
+SourceCode: https://github.com/LycosLane/puremusic
+IssueTracker: https://github.com/LycosLane/puremusic/issues
+Changelog: https://github.com/LycosLane/puremusic/releases
+AutoName: PureMusic
+Summary: Privacy-first music player with offline Mood Mix, equalizer, and MP3 tagger.
+Description: |-
+  PureMusic is a privacy-first, open-source music player and personal mood mix engine for Android.
+
+  Features:
+  - Scoped SAF library scanning with zero broad storage permissions
+  - Background Media3 playback, Party Mode crossfade, 5-band Equalizer, and pitch/speed controls
+  - Offline Personal Mood Mix and Similar Songs Generator
+  - Non-destructive per-track trim/fade and direct MP3 ID3v2.3 tag writing
+  - Zero ads, zero telemetry, and full JSON backup and restore

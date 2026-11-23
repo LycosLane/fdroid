@@ -1,0 +1,10 @@
+*.p12
+*.jks
+*.keystore
+repo/
+public/
+tmp/
+stats/
+cache/
+__pycache__/
+.venv/
