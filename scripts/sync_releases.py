@@ -14,9 +14,27 @@ import zipfile
 from pathlib import Path
 
 APPS = [
-    ("LycosLane/purepodcast", "com.lycoslane.purepodcast", "PurePodcast", "Multimedia"),
-    ("LycosLane/pureaudiobooks", "com.lycoslane.pureaudiobooks", "PureAudiobooks", "Multimedia"),
-    ("LycosLane/freedatadiet-mobile", "com.lycoslane.freedatadiet_mobile", "FreeDataDiet Mobile", "System"),
+    (
+        "LycosLane/purepodcast",
+        "com.lycoslane.purepodcast",
+        "PurePodcast",
+        "Multimedia",
+        "Why PurePodcast: Most podcast apps either lock storage-saving compression behind paid subscriptions, clutter the UI with ads, or lack channel-level audio repair. PurePodcast is 100% free, ad-free, and built purely on native AndroidX/Media3.",
+    ),
+    (
+        "LycosLane/pureaudiobooks",
+        "com.lycoslane.pureaudiobooks",
+        "PureAudiobooks",
+        "Multimedia",
+        "Why PureAudiobooks: Generic players ignore broken stereo rips, mixed album tags, and speed-adjusted remaining time. PureAudiobooks gives you a calm SAF-folder library with live channel repair, tag splitting, and local sidecar metadata.",
+    ),
+    (
+        "LycosLane/freedatadiet-mobile",
+        "com.lycoslane.freedatadiet_mobile",
+        "FreeDataDiet Mobile",
+        "System",
+        "Why FreeDataDiet: Storage cleaners on Play Store are full of ads, trackers, and fake RAM boosters. FreeDataDiet requests zero internet permission, flattens entire folder trees for instant sorting, and verifies duplicates with 2-pass SHA-256.",
+    ),
 ]
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -135,13 +153,13 @@ def write_landing_page(synced_apps: list[dict[str, object]]) -> None:
 
     cards_html = []
     for app in synced_apps:
-        app_id = str(app["app_id"])
         name = html_lib.escape(str(app["display_name"]))
         tag = html_lib.escape(str(app["tag"]))
         category = html_lib.escape(str(app["category"]))
         repo_link = html_lib.escape(str(app["repo_url"]))
         apk_link = html_lib.escape(str(app["apk_url"]))
         short_desc = html_lib.escape(str(app["short_desc"]))
+        why_copy = html_lib.escape(str(app["why_copy"]))
         icon_rel = str(app["icon_rel"])
         bullets = app["bullets"]
 
@@ -161,10 +179,10 @@ def write_landing_page(synced_apps: list[dict[str, object]]) -> None:
               <span class="badge badge-version">{tag}</span>
               <span class="badge badge-cat">{category}</span>
             </div>
-            <div class="app-id"><code>{html_lib.escape(app_id)}</code></div>
+            <p class="app-short">{short_desc}</p>
           </div>
         </div>
-        <p class="app-short">{short_desc}</p>
+        <p class="app-why">{why_copy}</p>
         <ul class="app-bullets">{bullets_html}</ul>
         <div class="app-actions">
           <a class="btn btn-secondary" href="{repo_link}">GitHub Source</a>
@@ -397,9 +415,18 @@ def write_landing_page(synced_apps: list[dict[str, object]]) -> None:
       padding: 2px 6px;
     }}
     .app-short {{
-      margin: 0 0 10px;
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }}
+    .app-why {{
+      margin: 0 0 12px;
+      padding: 10px 14px;
+      background: var(--surface);
+      border-left: 3px solid var(--cyan);
+      border-radius: 0 8px 8px 0;
       color: var(--text);
-      font-weight: 500;
+      font-size: 0.92rem;
     }}
     .app-bullets {{
       margin: 0 0 16px;
@@ -486,7 +513,7 @@ def main() -> None:
     METADATA_DIR.mkdir(parents=True, exist_ok=True)
     synced_apps: list[dict[str, object]] = []
 
-    for repo_slug, app_id, display_name, category in APPS:
+    for repo_slug, app_id, display_name, category, why_copy in APPS:
         release_url = f"https://api.github.com/repos/{repo_slug}/releases/latest"
         try:
             release = json.loads(github_request(release_url).decode("utf-8"))
@@ -519,6 +546,7 @@ def main() -> None:
             "repo_url": f"https://github.com/{repo_slug}",
             "apk_url": download_url,
             "short_desc": short_desc,
+            "why_copy": why_copy,
             "bullets": bullets,
             "icon_rel": icon_rel,
         })
