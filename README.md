@@ -44,11 +44,11 @@ If you are browsing directly on your phone without a second screen, open the [**
 
 ## Available Apps
 
-| App | Category | Package ID | Source |
-|---|---|---|---|
-| **PurePodcast** | Multimedia | `com.lycoslane.purepodcast` | [LycosLane/purepodcast](https://github.com/LycosLane/purepodcast) |
-| **PureAudiobooks** | Multimedia | `com.lycoslane.pureaudiobooks` | [LycosLane/pureaudiobooks](https://github.com/LycosLane/pureaudiobooks) |
-| **FreeDataDiet Mobile** | System | `com.lycoslane.freedatadiet_mobile` | [LycosLane/freedatadiet-mobile](https://github.com/LycosLane/freedatadiet-mobile) |
+| App | Category | Source |
+|---|---|---|
+| **PurePodcast** | Multimedia | [LycosLane/purepodcast](https://github.com/LycosLane/purepodcast) |
+| **PureAudiobooks** | Multimedia | [LycosLane/pureaudiobooks](https://github.com/LycosLane/pureaudiobooks) |
+| **FreeDataDiet Mobile** | System | [LycosLane/freedatadiet-mobile](https://github.com/LycosLane/freedatadiet-mobile) |
 
 ### PurePodcast
 
