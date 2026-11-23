@@ -1,4 +1,4 @@
-repo_url: https://lycoslane.github.io/fdroid-repo/repo
+repo_url: https://lycoslane.github.io/fdroid/repo
 repo_name: LycosLane Apps
 repo_description: Official F-Droid repository for PurePodcast, PureAudiobooks, PureMusic, and FreeDataDiet Mobile.
 keystore: keystore.p12

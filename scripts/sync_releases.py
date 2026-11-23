@@ -116,7 +116,7 @@ def write_landing_page(synced_apps: list[dict[str, str]]) -> None:
   <h1>LycosLane Apps - F-Droid Repository</h1>
   <p>Add this repository URL in <strong>F-Droid</strong>, <strong>Droid-ify</strong>, or <strong>Neo Store</strong> to install and automatically update all Pure Suite Android apps:</p>
   <div class="box">
-    <code>https://lycoslane.github.io/fdroid-repo/repo</code>
+    <code>https://lycoslane.github.io/fdroid/repo</code>
   </div>
   <h2>Available Apps</h2>
   <ul>

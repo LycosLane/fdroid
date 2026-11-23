@@ -1,33 +1,24 @@
 # LycosLane F-Droid Repository
 
-Self-hosted F-Droid repository served via GitHub Pages for all Pure Suite Android applications (`PurePodcast`, `PureAudiobooks`, `PureMusic`, and `FreeDataDiet Mobile`).
+Official F-Droid repository for all Pure Suite Android applications, hosted via GitHub Pages with automatic daily release syncing.
 
 ---
 
-## Add Repository to F-Droid Client
+## Included Apps
 
-Open **F-Droid**, **Droid-ify**, or **Neo Store** and add the following repository URL:
-
-`https://lycoslane.github.io/fdroid-repo/repo`
+* **[PurePodcast](https://github.com/LycosLane/purepodcast):** Clean, tracker-free podcast player with on-device AAC downsampling, live Mono/Audio-Fix DSP, and local SAF folders.
+* **[PureAudiobooks](https://github.com/LycosLane/pureaudiobooks):** Privacy-first audiobook player with SAF folder scanning, live Mono/Audio-Fix DSP, album-tag splitting, and sidecar metadata.
+* **[PureMusic](https://github.com/LycosLane/puremusic):** Privacy-first music player with offline Mood Mix, 5-band equalizer, Party Mode crossfade, and direct MP3 tag writing.
+* **[FreeDataDiet Mobile](https://github.com/LycosLane/freedatadiet-mobile):** Fast, 100% offline disk usage, configurable multi-criteria duplicate finder, and app-cache analyzer with zero internet permission.
 
 ---
 
-## One-Time GitHub Setup
+## How to Install
 
-1. Create a public GitHub repository named `fdroid-repo` under `LycosLane`.
-2. Generate a dedicated repository signing keystore locally (keep this file backed up outside the repo):
-
-   ```bash
-   keytool -genkeypair -keystore fdroid-repo.p12 -storetype PKCS12 -alias repokey -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=LycosLane F-Droid Repo"
-   ```
-
-3. Base64-encode the keystore (single line, no wrapping) and add three GitHub repository secrets under **Settings -> Secrets and variables -> Actions**:
-   - `FDROID_KEYSTORE_BASE64`: base64 contents of `fdroid-repo.p12`
-   - `FDROID_KEYSTORE_PASS`: keystore password
-   - `FDROID_KEY_PASS`: key password (same as keystore password for PKCS12)
-
-4. Enable GitHub Pages under **Settings -> Pages -> Build and deployment -> Source: GitHub Actions**.
-5. Push `main` and trigger **Deploy F-Droid Repository** in the **Actions** tab (it also runs automatically every day at `04:00 UTC`).
+1. Install **F-Droid**, **Droid-ify**, or **Neo Store** on your Android device.
+2. Open **Repositories -> Add repository** and paste this URL:
+   `https://lycoslane.github.io/fdroid/repo`
+3. Refresh repositories, then install and update any of the apps above with one tap.
 
 ---
 
